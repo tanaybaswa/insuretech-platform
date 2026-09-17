@@ -15,23 +15,28 @@ It connects AI vendors (insurable products), insurance underwriters (price / sel
 | 4 | Claims evidence | Trusted runtime/environment pack at claim time |
 | 5 | Marketplace | Data flywheel → multi-party AI insurance marketplace |
 
-## Phase 0 — Foundation (current)
+## Phase 0 — Foundation
 
-**Goal:** Authenticated dual-portal shell.
+**Done.** Auth, roles, `/vendor` and `/underwriter` shells, Postgres orgs/users.
+
+## Phase 1 — Pre-qualify (current)
+
+**Goal:** Shared qualification case for versioned AI products.
 
 **In scope**
 
-- Auth / session
-- Roles: `vendor`, `underwriter` (`insured_org` entity reserved, no portal yet)
-- Routes: `/vendor/*`, `/underwriter/*`
-- Postgres: orgs, users, role membership
-- Light enterprise UI shell + style guide
+- `AiProduct` / `AiProductVersion` / `QualificationCase`
+- Seeded SOC-like questionnaire + answers
+- Evidence upload (local disk + DB metadata)
+- Underwriter review: start review / qualify / needs info
+- Shared case view across portals
 
-**Exit criteria:** A vendor user and an underwriter user can sign in and only see their portal.
+See [phase-1-qualification.md](./phase-1-qualification.md).
+
+**Exit criteria:** Underwriter can open a vendor’s submitted case and see the same status, answers, and evidence; qualification status updates are visible to the vendor on that same record.
 
 ## Later phases (summary)
 
-- **1** — Answer “Is ACME qualified?” with questionnaire + evidence for versioned products
 - **2** — Encode what in-policy means before live traffic
 - **3** — Single observation layer; OOP for over-use / wrong version / term breach
 - **4** — Claims investigation evidence packs

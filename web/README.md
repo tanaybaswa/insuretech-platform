@@ -5,8 +5,12 @@ Next.js frontend + API for the VizCo AI insurance information broker.
 ## Phase 0
 
 Dual portals (Vendor / Underwriter), credential auth, Postgres-backed orgs and
-memberships. See [`docs/product/phase-roadmap.md`](../docs/product/phase-roadmap.md)
-and [`docs/design/style-guide.md`](../docs/design/style-guide.md).
+memberships.
+
+## Phase 1
+
+Shared qualification for versioned AI products: questionnaire, evidence upload,
+underwriter review. See [`docs/product/phase-1-qualification.md`](../docs/product/phase-1-qualification.md).
 
 ## Setup
 
@@ -27,3 +31,10 @@ Open http://localhost:3000 (or Cloud Agent forwarded port 3000).
 | --- | --- | --- |
 | Vendor | `vendor@acme.ai` | `password123` |
 | Underwriter | `underwriter@harborins.com` | `password123` |
+
+### Phase 1 demo path
+
+1. Sign in as vendor → AI products → New product
+2. Complete questionnaire, upload a file, Submit
+3. Sign out → underwriter → Qualifications → open case → Start review → Qualify
+

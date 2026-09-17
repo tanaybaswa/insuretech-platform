@@ -22,9 +22,12 @@ export default async function VendorLayout({
       nav={
         <PortalNav
           items={[
-            { href: "/vendor", label: "Overview", active: true },
-            { href: "/vendor", label: "AI products (soon)" },
-            { href: "/vendor", label: "Qualification (soon)" },
+            { href: "/vendor", label: "Overview", match: "/vendor" },
+            {
+              href: "/vendor/products",
+              label: "AI products",
+              match: "/vendor/products",
+            },
           ]}
         />
       }

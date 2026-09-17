@@ -22,9 +22,12 @@ export default async function UnderwriterLayout({
       nav={
         <PortalNav
           items={[
-            { href: "/underwriter", label: "Overview", active: true },
-            { href: "/underwriter", label: "Vendors (soon)" },
-            { href: "/underwriter", label: "Policies (soon)" },
+            { href: "/underwriter", label: "Overview", match: "/underwriter" },
+            {
+              href: "/underwriter/qualifications",
+              label: "Qualifications",
+              match: "/underwriter/qualifications",
+            },
           ]}
         />
       }
