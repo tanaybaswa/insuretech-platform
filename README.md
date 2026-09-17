@@ -4,17 +4,16 @@ Platform codebase for insurance technology services.
 
 ## Status
 
-Early scaffolding. Application code, services, and infrastructure land in
-follow-up commits.
+Next.js app shell is under `web/`. Broader product architecture, Python
+services, and Azure infrastructure will be planned and added next.
 
-## Getting started
+## Local / Cloud Agent
 
 ```bash
-git clone https://github.com/tanaybaswa/insuretech-platform.git
-cd insuretech-platform
+cd web
+npm install
+npm run dev
 ```
 
-## Repository layout
-
-Layout is defined as components are added. Each top-level directory owns a
-single service or shared library and carries its own README.
+App listens on `http://0.0.0.0:3000`. In a Cloud Agent session, open the
+**Forwarded Ports** menu and forward port `3000` to preview it.
