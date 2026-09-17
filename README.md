@@ -1,11 +1,11 @@
 # insuretech-platform
 
-Platform codebase for insurance technology services.
+VizCo — InsureTech AI insurance information broker.
 
 ## Status
 
-Next.js app shell is under `web/`. Broader product architecture, Python
-services, and Azure infrastructure will be planned and added next.
+- Next.js app shell: `web/`
+- Product phase roadmap: [`docs/product/phase-roadmap.md`](docs/product/phase-roadmap.md)
 
 ## Local / Cloud Agent
 
