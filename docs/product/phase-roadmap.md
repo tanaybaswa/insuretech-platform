@@ -66,51 +66,38 @@ VizCo answers those with pre-qualification + a **single observation stream** per
 
 ---
 
+## Phase overview
+
+| Phase | Name | Status | Outcome |
+| --- | --- | --- | --- |
+| 0 | Foundation | Done | Dual portals, auth, roles, Postgres |
+| 1 | Pre-qualify | Done | Versioned AI products + evidence → VizCo qualification |
+| 2 | Policy terms | Next | Monitorable terms (usage caps, version, insured party) |
+| 3 | Observation | Planned | Usage stream + out-of-policy events for underwriters |
+| 4 | Claims evidence | Planned | Trusted runtime/environment pack at claim time |
+| 5 | Marketplace | Planned | Data flywheel → multi-party AI insurance marketplace |
+
+---
+
 ## Phase 0 — Foundation (platform shell)
 
-**Goal:** Authenticated dual-portal shell ready for broker features.
+**Status: Done.**
 
-**Deliverables:**
+Authenticated dual-portal shell: auth/session, roles `vendor` / `underwriter`, routes `/vendor/*` and `/underwriter/*`, Postgres orgs/users/memberships.
 
-- Auth / session
-- Roles: `vendor`, `underwriter` (data model may include `insured_org` as an entity without a portal yet)
-- Routes: `/vendor/*`, `/underwriter/*`
-- Postgres: orgs, users, role membership
-- Empty intentional home states per role
-- Cloud Agent / local run path remains working
-
-**Out of scope:** Questionnaires, policies, monitoring, claims
-
-**Exit criteria:** Vendor and underwriter users sign in and only see their portal.
-
-**CTO question unlocked:** none yet — plumbing only.
+**Exit criteria met:** Vendor and underwriter users sign in and only see their portal.
 
 ---
 
 ## Phase 1 — Pre-qualify vendors and versioned AI products
 
+**Status: Done.** See [phase-1-qualification.md](./phase-1-qualification.md).
+
 **Goal:** Answer *“How did the underwriter know ACME could be qualified for this deal?”*
 
-This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
+Shared `QualificationCase` for each product version: SOC-like questionnaire, evidence uploads, underwriter review (start review / qualify / needs info). Vendor and underwriter portals render the same record.
 
-**Vendor:**
-
-- Register an **AI product** with **explicit versions** (v1, v2, …)
-- SOC-like questionnaire + self-report (versioned forms)
-- Upload credentials / evidence assets (reports, architecture, AIUC-style packs, etc.)
-- Status: `draft` → `submitted` → `in_review` → `qualified` / `needs_info`
-
-**Underwriter:**
-
-- Directory of vendors and **insurable products** (by version)
-- Completeness of pre-qualification steps + evidence pack
-- Light review: request info / mark under review / qualify (manual is fine)
-
-**Out of scope:** Live usage monitoring, policy binding UX depth, claims, marketplace
-
-**Exit criteria:** Underwriter can open ACME MRI Software **v2** and see whether it is VizCo-pre-qualified and what evidence supports that.
-
-**CTO question unlocked:** (1) qualification confidence
+**Exit criteria met:** Underwriter can open a submitted case and see identical status, answers, and evidence; qualification updates are visible to the vendor on that same record.
 
 ---
 
@@ -133,8 +120,6 @@ This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
 
 **Exit criteria:** For a sample policy, VizCo can state *what would count as in-policy vs out-of-policy* before any live traffic.
 
-**CTO questions prepared:** (2) usage limits, (3) version, (4) other terms — as data, not yet live detection
-
 ---
 
 ## Phase 3 — Observation stream and out-of-policy detection
@@ -143,20 +128,14 @@ This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
 
 **Deliverables:**
 
-- Vendor-facing **monitoring integration** (SDK / webhook / agent — pick one thin path in Phase 3 detail) that emits observation events from insured AI product runtimes
+- Vendor-facing **monitoring integration** that emits observation events from insured AI product runtimes
 - Ingest and store: usage events, product version in use, agreed environment/term signals
 - Evaluate against Phase 2 terms → **in-policy** vs **out-of-policy** events
-  - Example: policy allows 500 uses, 700 executed → OOP event
-  - Example: policy covers v1, runtime reports v2 → OOP event
-- **Underwriter aggregation view:** realtime (or near-realtime) policy use across all vendors they service — without per-vendor UW integrations
+- **Underwriter aggregation view** across all vendors they service — without per-vendor UW integrations
 - Vendor view: integration health, recent events for their products
 - Alerting for OOP (in-app first)
 
-**Out of scope:** Full claims workspace; multi-underwriter marketplace; custom per-vendor UW connectors
-
 **Exit criteria:** Underwriter sees live/near-live use for a bound policy and receives OOP events for over-use and wrong version without integrating to the vendor directly.
-
-**CTO questions unlocked:** (2) usage, (3) version, (4) term breach signals that were defined in Phase 2
 
 ---
 
@@ -167,15 +146,10 @@ This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
 **Deliverables:**
 
 - Claim case linked to policy + insured party + product version
-- Evidence pack at/around claim time: observation history, OOP history, captured runtime/environment/IT status (per agreed schema)
+- Evidence pack at/around claim time: observation history, OOP history, captured runtime/environment/IT status
 - Underwriter claims review surface (evidence first — not full claims adjudication/payment)
-- Vendor cooperation hooks if more forensic detail is required
-
-**Out of scope:** End-to-end claims payment, litigation workflow, carrier core-system replacement
 
 **Exit criteria:** For a simulated claim, underwriter can pull a VizCo evidence pack that answers “what was running, under what terms, and what signals existed at claim time?”
-
-**CTO question unlocked:** (5) claims investigation evidence
 
 ---
 
@@ -185,14 +159,11 @@ This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
 
 **Deliverables:**
 
-- Retain and aggregate **performance / loss / OOP stats** across AI product classes (underwriter-facing insights; privacy and tenancy respected)
+- Aggregate performance / loss / OOP stats across AI product classes
 - Multi-underwriter / multi-vendor discovery of **pre-connected insurable products**
-- Policy offer flow through VizCo (marketplace shape from CTO “Idea evolution”)
-- Reinforce vendor incentive: better qualification + cleaner observation history → more demand / better terms
+- Policy offer flow through VizCo
 
 **Exit criteria:** An underwriter can discover and bind a pre-connected vendor product through VizCo; vendors see commercial pull from being on the network.
-
-**CTO future unlocked:** marketplace as info brokerage
 
 ---
 
@@ -224,5 +195,5 @@ This is the SOC2-for-AI / credentials wedge — still insurance-shaped.
 ## How we work from here
 
 1. This document is the **master phase list** and durable source of truth
-2. Next: **only expand + build Phase 0**
-3. Do not detail Phase 1+ until the prior phase is complete and documented
+2. Next: **only expand + build Phase 2**
+3. Do not detail Phase 3+ until the prior phase is complete and documented

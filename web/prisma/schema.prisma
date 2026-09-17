@@ -1,0 +1,198 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrgType {
+  VENDOR
+  UNDERWRITER
+  INSURED
+}
+
+enum MembershipRole {
+  VENDOR
+  UNDERWRITER
+}
+
+enum QualificationStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  QUALIFIED
+  NEEDS_INFO
+}
+
+enum QuestionInputType {
+  TEXT
+  TEXTAREA
+  BOOLEAN
+  SELECT
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  type      OrgType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+  aiProducts  AiProduct[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships    Membership[]
+  reviewEvents   ReviewEvent[]
+  evidenceAssets EvidenceAsset[]
+}
+
+model Membership {
+  id             String         @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MembershipRole
+  createdAt      DateTime       @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
+model AiProduct {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String   @default("")
+  category       String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  versions     AiProductVersion[]
+
+  @@index([organizationId])
+}
+
+model AiProductVersion {
+  id           String   @id @default(cuid())
+  productId    String
+  version      String
+  releaseNotes String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product           AiProduct          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qualificationCase QualificationCase?
+
+  @@unique([productId, version])
+  @@index([productId])
+}
+
+model QualificationCase {
+  id               String              @id @default(cuid())
+  productVersionId String              @unique
+  questionnaireId  String
+  status           QualificationStatus @default(DRAFT)
+  lastReviewNote   String              @default("")
+  submittedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  productVersion AiProductVersion        @relation(fields: [productVersionId], references: [id], onDelete: Cascade)
+  questionnaire  QuestionnaireDefinition @relation(fields: [questionnaireId], references: [id])
+  answers        QuestionnaireAnswer[]
+  evidenceAssets EvidenceAsset[]
+  reviewEvents   ReviewEvent[]
+
+  @@index([status])
+  @@index([questionnaireId])
+}
+
+model QuestionnaireDefinition {
+  id        String   @id @default(cuid())
+  key       String
+  version   Int
+  title     String
+  createdAt DateTime @default(now())
+
+  questions QuestionnaireQuestion[]
+  cases     QualificationCase[]
+
+  @@unique([key, version])
+}
+
+model QuestionnaireQuestion {
+  id              String            @id @default(cuid())
+  questionnaireId String
+  sortOrder       Int
+  prompt          String
+  helpText        String            @default("")
+  inputType       QuestionInputType
+  required        Boolean           @default(true)
+  optionsJson     String            @default("[]")
+
+  questionnaire QuestionnaireDefinition @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  answers       QuestionnaireAnswer[]
+
+  @@index([questionnaireId])
+}
+
+model QuestionnaireAnswer {
+  id         String   @id @default(cuid())
+  caseId     String
+  questionId String
+  value      String   @default("")
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  case     QualificationCase     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  question QuestionnaireQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, questionId])
+  @@index([caseId])
+}
+
+model EvidenceAsset {
+  id           String   @id @default(cuid())
+  caseId       String
+  uploadedById String
+  filename     String
+  contentType  String
+  sizeBytes    Int
+  storageKey   String
+  label        String   @default("")
+  createdAt    DateTime @default(now())
+
+  case       QualificationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  uploadedBy User              @relation(fields: [uploadedById], references: [id])
+
+  @@index([caseId])
+}
+
+model ReviewEvent {
+  id         String               @id @default(cuid())
+  caseId     String
+  actorId    String
+  fromStatus QualificationStatus?
+  toStatus   QualificationStatus
+  note       String               @default("")
+  createdAt  DateTime             @default(now())
+
+  case  QualificationCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  actor User              @relation(fields: [actorId], references: [id])
+
+  @@index([caseId])
+}
